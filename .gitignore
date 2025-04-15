@@ -1,1 +1,5 @@
+#  Ignorar arquivos executáveis
 *.exe
+
+# Ignorar a pasta de build do Go
+pkg/
