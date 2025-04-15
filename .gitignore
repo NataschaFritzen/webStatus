@@ -3,3 +3,6 @@
 
 # Ignorar a pasta de build do Go
 pkg/
+
+pkg/mod/golang.org/x/tools/gopls/
+
