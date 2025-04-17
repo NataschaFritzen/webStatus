@@ -10,7 +10,6 @@ import (
 func main() {
 	exibeIntroducao()
 	for {
-		exibeIntroducao()
 		exibeMenu()
 	
 		comando := leComando()
@@ -30,10 +29,6 @@ func main() {
 		} 
 
 	}
-
-
-
-
 }
 
 func exibeIntroducao() {
@@ -59,6 +54,14 @@ func leComando() int {
 
 func iniciarMonitoramento() {
 	fmt.Println("Monitoramento...")
+	sites := []string{"https://random-status-code.herokuapp.com/", "https://www.alura.com.br", "https://www.caelum.com.br"}
+
+	fmt.Println(sites)
+
+	for i, site := range sites {        //Faz que imprima a posição e quem a ocupa
+		fmt.Println("Estou passando na posicao", i, "do meu slice e essa posicao tem o site:", site)
+	}
+	
 	site := "https://random-status-code.herokuapp.com/"
 	resp, _ := http.Get(site)
 
