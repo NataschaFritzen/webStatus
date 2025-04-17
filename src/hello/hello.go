@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 )
+
+const monitoramentos = 3
+const delay = 5
 
 func main() {
 	exibeIntroducao()
@@ -48,6 +52,7 @@ func leComando() int {
 	var comandoLido int
 	fmt.Scan(&comandoLido)
 	fmt.Println("O comando escolhido foi", comandoLido)
+	fmt.Println("")  
 
 	return comandoLido
 }
@@ -56,13 +61,22 @@ func iniciarMonitoramento() {
 	fmt.Println("Monitoramento...")
 	sites := []string{"https://random-status-code.herokuapp.com/", "https://www.alura.com.br", "https://www.caelum.com.br"}
 
-	fmt.Println(sites)
-
-	for i, site := range sites {        //Faz que imprima a posição e quem a ocupa
-		fmt.Println("Estou passando na posicao", i, "do meu slice e essa posicao tem o site:", site)
+	for i:= 0; i < monitoramentos; i++{              //Monitorando durante 3 vezes  
+		for i, site := range sites {    //Faz que imprima a posição e quem a ocupa
+			fmt.Println("Testando site", i, ":", site)
+			testaSite(site)
+		}
+		time.Sleep(delay * time.Second)    //Testando o site a cada 5 segundos
+		fmt.Println("")  
 	}
-	
-	site := "https://random-status-code.herokuapp.com/"
+
+	fmt.Println("")                     //Espaçamento no console
+
+}
+
+
+
+func testaSite(site string) {
 	resp, _ := http.Get(site)
 
 	if resp.StatusCode == 200 {
@@ -70,5 +84,6 @@ func iniciarMonitoramento() {
 	} else {
 		fmt.Println("Site", site, "está com problemas. Status Code:",
 		resp.StatusCode)
+
 	}
 }
