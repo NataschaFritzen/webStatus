@@ -29,6 +29,7 @@ func main() {
 	
 		case 2:
 			fmt.Println("Exibindo Logs...")
+			imprimeLogs()
 		case 0:
 			fmt.Println("Saindo do programa")
 			os.Exit(0)
@@ -132,10 +133,18 @@ func registraLog(site string, status bool) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	arquivo.WriteString(site + "- online: " + strconv.FormatBool(status) + "\n")
-
+	arquivo.WriteString(time.Now().Format("02/01/2006 15:04:05") + "-" + site + "- online: " + strconv.FormatBool(status) + "\n")    //Uma das formas que Go representa seu formato de tempo("02/01/2006 15:04:05")
 
 	arquivo.Close()
+	}
 
-}
+	func imprimeLogs (){
+		conteudo, err := os.ReadFile("log.txt")
+
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(string(conteudo))
+	}
+
 
