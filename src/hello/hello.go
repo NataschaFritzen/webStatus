@@ -5,6 +5,10 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"bufio"
+	"strings"
+	"io"
+	"strconv"
 
 )
 
@@ -13,6 +17,7 @@ const delay = 5
 
 func main() {
 	exibeIntroducao()
+
 	for {
 		exibeMenu()
 	
@@ -59,9 +64,11 @@ func leComando() int {
 
 func iniciarMonitoramento() {
 	fmt.Println("Monitoramento...")
-	sites := []string{"https://random-status-code.herokuapp.com/", "https://www.alura.com.br", "https://www.caelum.com.br"}
+	// sites := []string{"https://random-status-code.herokuapp.com/", "https://www.alura.com.br", "https://www.caelum.com.br"}
 
-	for i:= 0; i < monitoramentos; i++{              //Monitorando durante 3 vezes  
+	sites := leSitesDoArquivo()
+
+	for i:= 0; i < monitoramentos; i++ {              //Monitorando durante 3 vezes  
 		for i, site := range sites {    //Faz que imprima a posição e quem a ocupa
 			fmt.Println("Testando site", i, ":", site)
 			testaSite(site)
@@ -74,16 +81,61 @@ func iniciarMonitoramento() {
 
 }
 
-
-
 func testaSite(site string) {
-	resp, _ := http.Get(site)
+	resp, err := http.Get(site)
+
+	if err != nil {
+		fmt.Println("Oocorreu um erro:", err)
+	}
 
 	if resp.StatusCode == 200 {
 		fmt.Println("Site:", site, "foi carregado com sucesso!")
+		registraLog(site, true)
 	} else {
 		fmt.Println("Site", site, "está com problemas. Status Code:",
 		resp.StatusCode)
+		registraLog(site, false)
 
 	}
 }
+
+func leSitesDoArquivo() []string {
+	var sites []string
+
+	arquivo, err := os.Open("sites.txt")
+
+	if err != nil {
+		fmt.Println("Ocorreu um erro:", err)
+	}
+
+	leitor := bufio.NewReader(arquivo)
+
+	for {
+		linha, err := leitor.ReadString('\n')
+		linha = strings.TrimSpace(linha)
+
+	sites = append(sites, linha)
+
+	if err == io.EOF {
+		break
+	}
+}
+arquivo.Close()
+	return sites
+
+}
+
+func registraLog(site string, status bool) {
+
+	arquivo, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	arquivo.WriteString(site + "- online: " + strconv.FormatBool(status) + "\n")
+
+
+	arquivo.Close()
+
+}
+
