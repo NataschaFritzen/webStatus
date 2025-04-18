@@ -1,15 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
-	"time"
-	"bufio"
-	"strings"
-	"io"
 	"strconv"
-
+	"strings"
+	"time"
 )
 
 const monitoramentos = 3
@@ -20,13 +19,13 @@ func main() {
 
 	for {
 		exibeMenu()
-	
+
 		comando := leComando()
-	
+
 		switch comando {
 		case 1:
 			iniciarMonitoramento()
-	
+
 		case 2:
 			fmt.Println("Exibindo Logs...")
 			imprimeLogs()
@@ -36,7 +35,7 @@ func main() {
 		default:
 			fmt.Println("Não conheço este comando")
 			os.Exit(-1)
-		} 
+		}
 
 	}
 }
@@ -47,7 +46,7 @@ func exibeIntroducao() {
 	fmt.Println("Olá, sr.", nome)
 	fmt.Println("Este programa está na versão", versao)
 }
-func exibeMenu(){
+func exibeMenu() {
 	fmt.Println("1- Iniciar monitoramento")
 	fmt.Println("2- Exibir Logs")
 	fmt.Println("0- Sair do programa")
@@ -58,7 +57,7 @@ func leComando() int {
 	var comandoLido int
 	fmt.Scan(&comandoLido)
 	fmt.Println("O comando escolhido foi", comandoLido)
-	fmt.Println("")  
+	fmt.Println("")
 
 	return comandoLido
 }
@@ -69,16 +68,16 @@ func iniciarMonitoramento() {
 
 	sites := leSitesDoArquivo()
 
-	for i:= 0; i < monitoramentos; i++ {              //Monitorando durante 3 vezes  
-		for i, site := range sites {    //Faz que imprima a posição e quem a ocupa
+	for i := 0; i < monitoramentos; i++ { //Monitorando durante 3 vezes
+		for i, site := range sites { //Faz que imprima a posição e quem a ocupa
 			fmt.Println("Testando site", i, ":", site)
 			testaSite(site)
 		}
-		time.Sleep(delay * time.Second)    //Testando o site a cada 5 segundos
-		fmt.Println("")  
+		time.Sleep(delay * time.Second) //Testando o site a cada 5 segundos
+		fmt.Println("")
 	}
 
-	fmt.Println("")                     //Espaçamento no console
+	fmt.Println("") //Espaçamento no console
 
 }
 
@@ -94,7 +93,7 @@ func testaSite(site string) {
 		registraLog(site, true)
 	} else {
 		fmt.Println("Site", site, "está com problemas. Status Code:",
-		resp.StatusCode)
+			resp.StatusCode)
 		registraLog(site, false)
 
 	}
@@ -115,13 +114,13 @@ func leSitesDoArquivo() []string {
 		linha, err := leitor.ReadString('\n')
 		linha = strings.TrimSpace(linha)
 
-	sites = append(sites, linha)
+		sites = append(sites, linha)
 
-	if err == io.EOF {
-		break
+		if err == io.EOF {
+			break
+		}
 	}
-}
-arquivo.Close()
+	arquivo.Close()
 	return sites
 
 }
@@ -133,18 +132,16 @@ func registraLog(site string, status bool) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	arquivo.WriteString(time.Now().Format("02/01/2006 15:04:05") + "-" + site + "- online: " + strconv.FormatBool(status) + "\n")    //Uma das formas que Go representa seu formato de tempo("02/01/2006 15:04:05")
+	arquivo.WriteString(time.Now().Format("02/01/2006 15:04:05") + "-" + site + "- online: " + strconv.FormatBool(status) + "\n") //Uma das formas que Go representa seu formato de tempo("02/01/2006 15:04:05")
 
 	arquivo.Close()
+}
+
+func imprimeLogs() {
+	conteudo, err := os.ReadFile("log.txt")
+
+	if err != nil {
+		fmt.Println(err)
 	}
-
-	func imprimeLogs (){
-		conteudo, err := os.ReadFile("log.txt")
-
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(string(conteudo))
-	}
-
-
+	fmt.Println(string(conteudo))
+}
